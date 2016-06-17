@@ -16,7 +16,7 @@ var CanvasVideoPlayer = function(options) {
 		timelineSelector: false,
 		resetOnLastFrame: true,
 		cuepoints: [],
-        loop: false,
+		loop: false,
 		muted: false
 	};
 
