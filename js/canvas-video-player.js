@@ -15,7 +15,8 @@ var CanvasVideoPlayer = function(options) {
 		audio: false,
 		timelineSelector: false,
 		resetOnLastFrame: true,
-		loop: false,
+		cuepoints: [],
+        loop: false,
 		muted: false
 	};
 
@@ -145,6 +146,15 @@ CanvasVideoPlayer.prototype.bind = function() {
 		}
 	});
 
+	this.__fire_ready = function () {
+		self.fire('ready', {
+			'width':    self.video.videoWidth,
+			'height':   self.video.videoHeight,
+			'duration': self.video.duration
+		});
+		delete self.__fire_ready;
+	};
+
 	// Draws first frame
 	this.video.addEventListener('canplay', cvpHandlers.videoCanPlayHandler = function() {
 		self.drawFrame();
@@ -244,6 +254,10 @@ CanvasVideoPlayer.prototype.mute = function (setMute) {
 	}
 }
 
+CanvasVideoPlayer.prototype.setCuepoints = function(cuepoints) {
+	this.options.cuepoints = cuepoints;
+};
+
 CanvasVideoPlayer.prototype.on = function(eventName, callback) {
 	if (!eventName || !callback) return this;
 	if (!this.eventHandlers[eventName]) this.eventHandlers[eventName] = [];
@@ -279,6 +293,7 @@ CanvasVideoPlayer.prototype.loop = function() {
 	// Render
 	if(elapsed >= (1 / this.options.framesPerSecond)) {
 		this.video.currentTime = this.video.currentTime + elapsed;
+		this.fire('progress', this.video.currentTime);
 		if (this.options.cuepoints.length) {
 			var latestCuepoint, index = 0;
 			while (typeof(this.options.cuepoints[index]) !== 'undefined' && this.options.cuepoints[index] < this.video.currentTime) {
@@ -298,6 +313,7 @@ CanvasVideoPlayer.prototype.loop = function() {
 	// If we are at the end of the video stop
 	if (this.video.currentTime >= this.video.duration) {
 		this.playing = false;
+		this.fire('finish');
 
 		if (this.options.resetOnLastFrame === true) {
 			this.video.currentTime = 0;
@@ -321,4 +337,5 @@ CanvasVideoPlayer.prototype.loop = function() {
 
 CanvasVideoPlayer.prototype.drawFrame = function() {
 	this.ctx.drawImage(this.video, 0, 0, this.width, this.height);
+	if (this.__fire_ready) this.__fire_ready();
 };
