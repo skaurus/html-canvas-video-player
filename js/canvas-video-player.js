@@ -248,7 +248,7 @@ CanvasVideoPlayer.prototype.mute = function (setMute) {
 	if (!this.audio) return;
 	if (this.muted) {
 		this.audio.pause();
-	} else {
+	} else if (this.playing) {
 		this.audio.currentTime = this.video.currentTime;
 		this.audio.play();
 	}
