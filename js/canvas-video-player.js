@@ -258,6 +258,10 @@ CanvasVideoPlayer.prototype.setCuepoints = function(cuepoints) {
 	this.options.cuepoints = cuepoints;
 };
 
+CanvasVideoPlayer.prototype._getCuepointTime = function(cuepoint) {
+	return (typeof(cuepoint) === 'object' ? cuepoint.time : cuepoint);
+};
+
 CanvasVideoPlayer.prototype.on = function(eventName, callback) {
 	if (!eventName || !callback) return this;
 	if (!this.eventHandlers[eventName]) this.eventHandlers[eventName] = [];
@@ -296,11 +300,20 @@ CanvasVideoPlayer.prototype.loop = function() {
 		this.fire('progress', this.video.currentTime);
 		if (this.options.cuepoints.length) {
 			var latestCuepoint, index = 0;
-			while (typeof(this.options.cuepoints[index]) !== 'undefined' && this.options.cuepoints[index] < this.video.currentTime) {
+			while (typeof(this.options.cuepoints[index]) !== 'undefined' && this._getCuepointTime(this.options.cuepoints[index]) < this.video.currentTime) {
 				latestCuepoint = this.options.cuepoints[index++];
 			}
-			if (latestCuepoint && latestCuepoint > this.video.currentTime - elapsed) {
-				this.fire('cuepoint', { 'time': latestCuepoint, 'index': index-1 });
+			if (latestCuepoint && this._getCuepointTime(latestCuepoint) > this.video.currentTime - elapsed) {
+				var cuepointEventData = {};
+				if (typeof(latestCuepoint) === 'object') {
+					var cuepointKeys = Object.keys(latestCuepoint);
+					while (key = cuepointKeys.shift()) {
+						cuepointEventData[key] = latestCuepoint[key];
+					}
+				}
+				cuepointEventData['time'] = this._getCuepointTime(latestCuepoint);
+				cuepointEventData['index'] = index - 1;
+				this.fire('cuepoint', cuepointEventData);
 			}
 		}
 		this.lastTime = time;
