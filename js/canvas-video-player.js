@@ -89,6 +89,8 @@ var CanvasVideoPlayer = function(options) {
 };
 
 CanvasVideoPlayer.prototype.init = function() {
+	var self = this;
+
 	this.__ready_fired = false;
 	this.video.addEventListener('loadedmetadata', function (event) {
 		self.__ready_fired = true;
