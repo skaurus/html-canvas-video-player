@@ -89,6 +89,15 @@ var CanvasVideoPlayer = function(options) {
 };
 
 CanvasVideoPlayer.prototype.init = function() {
+	this.__ready_fired = false;
+	this.video.addEventListener('loadedmetadata', function (event) {
+		self.__ready_fired = true;
+		self.fire('ready', {
+			'width':    self.video.videoWidth,
+			'height':   self.video.videoHeight,
+			'duration': self.video.duration
+		});
+	});
 	this.video.load();
 
 	this.setCanvasSize();
@@ -145,15 +154,6 @@ CanvasVideoPlayer.prototype.bind = function() {
 			self.updateTimeline();
 		}
 	});
-
-	this.__fire_ready = function () {
-		self.fire('ready', {
-			'width':    self.video.videoWidth,
-			'height':   self.video.videoHeight,
-			'duration': self.video.duration
-		});
-		delete self.__fire_ready;
-	};
 
 	// Draws first frame
 	this.video.addEventListener('canplay', cvpHandlers.videoCanPlayHandler = function() {
@@ -351,5 +351,4 @@ CanvasVideoPlayer.prototype.loop = function() {
 
 CanvasVideoPlayer.prototype.drawFrame = function() {
 	this.ctx.drawImage(this.video, 0, 0, this.width, this.height);
-	if (this.__fire_ready) this.__fire_ready();
 };
