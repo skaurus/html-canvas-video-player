@@ -225,6 +225,8 @@ CanvasVideoPlayer.prototype.play = function() {
 		this.audio.currentTime = this.video.currentTime;
 		if (!this.muted) this.audio.play();
 	}
+
+	this.fire('play');
 };
 
 CanvasVideoPlayer.prototype.pause = function() {
@@ -233,6 +235,8 @@ CanvasVideoPlayer.prototype.pause = function() {
 	if (this.options.audio) {
 		this.audio.pause();
 	}
+
+	this.fire('pause');
 };
 
 CanvasVideoPlayer.prototype.playPause = function() {
