@@ -327,9 +327,8 @@ CanvasVideoPlayer.prototype.loop = function() {
 
 	// If we are at the end of the video stop
 	if (this.video.currentTime >= this.video.duration) {
+		if (this.playing) this.fire('finish');
 		this.playing = false;
-		this.fire('finish');
-		this.off('finish');
 
 		if (this.options.resetOnLastFrame === true) {
 			this.video.currentTime = 0;
