@@ -147,6 +147,7 @@ CanvasVideoPlayer.prototype.bind = function() {
 	// Playes or pauses video on canvas click
 	this.canvas.addEventListener('click', cvpHandlers.canvasClickHandler = function() {
 		self.playPause('onclick');
+		self.fire('canvasClick');
 	});
 
 	// On every time update draws frame
@@ -215,7 +216,7 @@ CanvasVideoPlayer.prototype.setCanvasSize = function() {
 	this.canvas.setAttribute('height', this.height);
 };
 
-CanvasVideoPlayer.prototype.play = function(handlingClick) {
+CanvasVideoPlayer.prototype.play = function() {
 	this.lastTime = Date.now();
 	this.playing = true;
 	this.loop();
@@ -226,25 +227,25 @@ CanvasVideoPlayer.prototype.play = function(handlingClick) {
 		if (!this.muted) this.audio.play();
 	}
 
-	this.fire('play', { 'onclick': handlingClick ? true : false });
+	this.fire('play');
 };
 
-CanvasVideoPlayer.prototype.pause = function(handlingClick) {
+CanvasVideoPlayer.prototype.pause = function() {
 	this.playing = false;
 
 	if (this.options.audio) {
 		this.audio.pause();
 	}
 
-	this.fire('pause', { 'onclick': handlingClick ? true : false });
+	this.fire('pause');
 };
 
-CanvasVideoPlayer.prototype.playPause = function(handlingClick) {
+CanvasVideoPlayer.prototype.playPause = function() {
 	if (this.playing) {
-		this.pause(handlingClick);
+		this.pause();
 	}
 	else {
-		this.play(handlingClick);
+		this.play();
 	}
 };
 
